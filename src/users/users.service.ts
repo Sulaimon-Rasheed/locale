@@ -1,6 +1,5 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 import {v4 as uuidv4} from "uuid"
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -10,7 +9,6 @@ import {Request, Response} from "express"
 import { LoginUserDto } from './dto/login-user.dto';
 import { AuthService } from 'src/authentication/auth'
 import * as fs from "fs"
-import * as path from "path"
 
 
 @Injectable()
@@ -101,16 +99,16 @@ export class UsersService {
 
   async getAllregions(req:Request, res:Response){
     try{
-    // await this.Authservice.ensureLogin(req, res)
+    await this.Authservice.ensureLogin(req, res)
     const regionsPath = `../locale/src/DB/region.ts`
     fs.readFile(regionsPath, "utf8", (err, data) => {
       if (err) {
-       res.json({
+       return res.json({
         statusCode:404,
         error:err.message
        })
       }
-      res.json({
+      return res.json({
         all_regions:JSON.parse(data)
       });
     });
@@ -125,17 +123,17 @@ export class UsersService {
 
     async getAllstates(req:Request, res:Response){
       try{
-      // await this.Authservice.ensureLogin(req, res)
+      await this.Authservice.ensureLogin(req, res)
 
       const statesPath = `../locale/src/DB/state.ts`
       fs.readFile(statesPath, "utf8", (err, data) => {
         if (err) {
-         res.json({
+        return res.json({
           statusCode:404,
           error:err.message
          })
         }
-        res.json({
+        return res.json({
           all_states:JSON.parse(data)
         });
       });
@@ -149,17 +147,17 @@ export class UsersService {
 
     async getAllLGA(req:Request, res:Response){
       try{
-      // await this.Authservice.ensureLogin(req, res)
+      await this.Authservice.ensureLogin(req, res)
         
       const local_govPath = `../locale/src/DB/local-gov.ts`
       fs.readFile(local_govPath, "utf8", (err, data) => {
         if (err) {
-         res.json({
+          return res.json({
           statusCode:404,
           error:err.message
          })
         }
-        res.json({
+        return res.json({
           all_LGA:JSON.parse(data)
         });
       });
@@ -170,9 +168,9 @@ export class UsersService {
     }
 
 //-----Getting a particular region--------------------------
-    getOneRegion( region_name:string ,req:Request, res:Response){
+async getOneRegion( region_name:string ,req:Request, res:Response){
       try{
-        // await this.Authservice.ensureLogin(req, res)
+        await this.Authservice.ensureLogin(req, res)
         const regionsPath = `../locale/src/DB/region.ts`
         let allRegions:any = fs.readFileSync(regionsPath)
         let allRegionsObj:object[] = JSON.parse(allRegions)
@@ -182,13 +180,13 @@ export class UsersService {
         } )
 
         if(!theRegion){
-          res.json({
+          return res.json({
             statusCode:404,
             error:"Opps!, Region not found"
           })
         }
 
-        res.json({
+        return res.json({
           statusCode:200,
           found_region:theRegion
         })
@@ -199,9 +197,9 @@ export class UsersService {
     }
 
     //-----Getting a particular state--------------------------
-    getOneState( state_name:string ,req:Request, res:Response){
+    async getOneState( state_name:string ,req:Request, res:Response){
       try{
-        // await this.Authservice.ensureLogin(req, res)
+        await this.Authservice.ensureLogin(req, res)
         const statesPath = `../locale/src/DB/state.ts`
         let allStates:any = fs.readFileSync(statesPath)
         let allStatesObj:object[] = JSON.parse(allStates)
@@ -211,13 +209,13 @@ export class UsersService {
         } )
 
         if(!theState){
-          res.json({
+          return res.json({
             statusCode:404,
             error:"Opps!, State not found"
           })
         }
 
-        res.json({
+        return res.json({
           statusCode:200,
           found_state:theState
         })
@@ -228,9 +226,9 @@ export class UsersService {
     }
 
     //-----Getting a particular Local government--------------------------
-    getOneLG( LG_name:string ,req:Request, res:Response){
+    async getOneLG( LG_name:string ,req:Request, res:Response){
       try{
-        // await this.Authservice.ensureLogin(req, res)
+        await this.Authservice.ensureLogin(req, res)
         const local_govPath = `../locale/src/DB/local-gov.ts`
         let allLocal_govs:any = fs.readFileSync(local_govPath)
         let allLocal_govsObj:object[] = JSON.parse(allLocal_govs)
@@ -240,13 +238,13 @@ export class UsersService {
         } )
 
         if(!theLocal_gov){
-          res.json({
+          return res.json({
             statusCode:404,
             error:"Opps!, Local government not found"
           })
         }
 
-        res.json({
+        return res.json({
           statusCode:200,
           found_local_government:theLocal_gov
         })
