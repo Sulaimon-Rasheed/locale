@@ -1,11 +1,12 @@
-import { Controller, Get, Post, Body, Res, ValidationPipe, Req, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Res, ValidationPipe, Req, Query, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { Request, Response } from 'express';
 import { LoginUserDto } from './dto/login-user.dto';
+import { ThrottlerGuard } from '@nestjs/throttler';
 
 @Controller('users')
+@UseGuards(ThrottlerGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 

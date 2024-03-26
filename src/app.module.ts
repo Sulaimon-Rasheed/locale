@@ -5,10 +5,21 @@ import { UsersModule } from './users/users.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import * as dotenv from "dotenv"
 dotenv.config()
+import { ThrottlerModule } from '@nestjs/throttler';
+import { GlobalExceptionFilter } from './globalError/global.filter';
+import { APP_FILTER } from '@nestjs/core';
 
 @Module({
-  imports: [UsersModule, MongooseModule.forRoot(process.env.DB_URL)],
+  imports: [
+    UsersModule, MongooseModule.forRoot(process.env.DB_URL), 
+    ThrottlerModule.forRoot([{ ttl: 60 * 1000, limit: 5 }]),
+  ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, 
+    {
+    provide: APP_FILTER,
+    useClass: GlobalExceptionFilter,
+  }
+],
 })
 export class AppModule {}
