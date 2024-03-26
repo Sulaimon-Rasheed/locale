@@ -102,8 +102,6 @@ export class UsersService {
   async getAllregions(req:Request, res:Response){
     try{
     // await this.Authservice.ensureLogin(req, res)
-      console.log("I am here")
-      console.log(__dirname)
     const regionsPath = `../locale/src/DB/region.ts`
     fs.readFile(regionsPath, "utf8", (err, data) => {
       if (err) {
@@ -128,8 +126,7 @@ export class UsersService {
     async getAllstates(req:Request, res:Response){
       try{
       // await this.Authservice.ensureLogin(req, res)
-        console.log("I am here")
-        console.log(__dirname)
+
       const statesPath = `../locale/src/DB/state.ts`
       fs.readFile(statesPath, "utf8", (err, data) => {
         if (err) {
@@ -153,10 +150,9 @@ export class UsersService {
     async getAllLGA(req:Request, res:Response){
       try{
       // await this.Authservice.ensureLogin(req, res)
-        console.log("I am here")
-        console.log(__dirname)
-      const statesPath = `../locale/src/DB/local-gov.ts`
-      fs.readFile(statesPath, "utf8", (err, data) => {
+        
+      const local_govPath = `../locale/src/DB/local-gov.ts`
+      fs.readFile(local_govPath, "utf8", (err, data) => {
         if (err) {
          res.json({
           statusCode:404,
@@ -171,6 +167,93 @@ export class UsersService {
       }catch(err){
         throw new Error(err.message)
       }
+    }
+
+//-----Getting a particular region--------------------------
+    getOneRegion( region_name:string ,req:Request, res:Response){
+      try{
+        // await this.Authservice.ensureLogin(req, res)
+        const regionsPath = `../locale/src/DB/region.ts`
+        let allRegions:any = fs.readFileSync(regionsPath)
+        let allRegionsObj:object[] = JSON.parse(allRegions)
+
+        const theRegion:object = allRegionsObj.find((region:any)=> {
+          return region.name === region_name
+        } )
+
+        if(!theRegion){
+          res.json({
+            statusCode:404,
+            error:"Opps!, Region not found"
+          })
+        }
+
+        res.json({
+          statusCode:200,
+          found_region:theRegion
+        })
+    
+        }catch(err){
+          throw new Error(err.message)
+        }
+    }
+
+    //-----Getting a particular state--------------------------
+    getOneState( state_name:string ,req:Request, res:Response){
+      try{
+        // await this.Authservice.ensureLogin(req, res)
+        const statesPath = `../locale/src/DB/state.ts`
+        let allStates:any = fs.readFileSync(statesPath)
+        let allStatesObj:object[] = JSON.parse(allStates)
+
+        const theState:object = allStatesObj.find((state:any)=> {
+          return state.name === state_name
+        } )
+
+        if(!theState){
+          res.json({
+            statusCode:404,
+            error:"Opps!, State not found"
+          })
+        }
+
+        res.json({
+          statusCode:200,
+          found_state:theState
+        })
+    
+        }catch(err){
+          throw new Error(err.message)
+        }
+    }
+
+    //-----Getting a particular Local government--------------------------
+    getOneLG( LG_name:string ,req:Request, res:Response){
+      try{
+        // await this.Authservice.ensureLogin(req, res)
+        const local_govPath = `../locale/src/DB/local-gov.ts`
+        let allLocal_govs:any = fs.readFileSync(local_govPath)
+        let allLocal_govsObj:object[] = JSON.parse(allLocal_govs)
+
+        const theLocal_gov:object = allLocal_govsObj.find((local_gov:any)=> {
+          return local_gov.name ===  LG_name
+        } )
+
+        if(!theLocal_gov){
+          res.json({
+            statusCode:404,
+            error:"Opps!, Local government not found"
+          })
+        }
+
+        res.json({
+          statusCode:200,
+          found_local_government:theLocal_gov
+        })
+    
+        }catch(err){
+          throw new Error(err.message)
+        }
     }
 
 

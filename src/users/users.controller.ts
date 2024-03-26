@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Res, ValidationPipe, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Res, ValidationPipe, Req, Query } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -32,6 +32,21 @@ export class UsersController {
    @Get('/getAllLGA')
    getAllLGA(@Req() req:Request, @Res() res:Response) {
      this.usersService.getAllLGA(req, res)
+   }
+
+   @Get('/getOneregion')
+   getOneRegion(@Query("region_name") region_name:string, @Req() req:Request, @Res() res:Response) {
+     this.usersService.getOneRegion(region_name,req, res)
+   }
+
+   @Get('/getOnestate')
+   getOneState(@Query("state_name") state_name:string, @Req() req:Request, @Res() res:Response) {
+     this.usersService.getOneState(state_name,req, res)
+   }
+
+   @Get('/getOneLG')
+   getOneLG(@Query("LG_name") LG_name:string, @Req() req:Request, @Res() res:Response) {
+     this.usersService.getOneLG(LG_name,req, res)
    }
   
 }
