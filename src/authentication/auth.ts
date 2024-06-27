@@ -11,7 +11,7 @@ export class AuthService {
     generateJwtToken(id: object, email:string, first_name:string): string {
         try{
             const tokenPayload = { id, email, first_name};
-            return jwt.sign(tokenPayload, this.jwtSecret, { expiresIn: '2h' }); 
+            return jwt.sign(tokenPayload, this.jwtSecret); 
         }catch(err){
             throw new Error(err.meessage)
         }

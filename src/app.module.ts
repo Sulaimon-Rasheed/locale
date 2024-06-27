@@ -12,7 +12,7 @@ import { APP_FILTER } from '@nestjs/core';
 @Module({
   imports: [
     UsersModule, MongooseModule.forRoot(process.env.DB_URL), 
-    ThrottlerModule.forRoot([{ ttl: 60 * 1000, limit: 5 }]),
+    ThrottlerModule.forRoot([{ ttl: 60 * 1000, limit: 10 }]),
   ],
   controllers: [AppController],
   providers: [AppService, 

@@ -7,7 +7,9 @@ export const userSchema = new Schema({
     last_name: { type: String, required:true},
     email:{type:String,required:true},
     phoneNum:{type:String, required:true},
-    api_key: { type: String, unique: true, required:true}
+    verified:{type:Boolean, default:false},
+    api_key: { type: String, unique: true, required:true},
+    subscriptionLevel: { type: String, enum: ['free', 'paid'], default: 'free' }, 
 })
 
 
@@ -17,5 +19,7 @@ export interface User extends mongoose.Document{
     last_name:string
     email:string
     phoneNum:string
+    verified:boolean
     api_key:string
+    subscriptionLevel: string;
 }
