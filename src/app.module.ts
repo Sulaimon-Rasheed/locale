@@ -8,6 +8,7 @@ dotenv.config()
 import { ThrottlerModule } from '@nestjs/throttler';
 import { GlobalExceptionFilter } from './globalError/global.filter';
 import { APP_FILTER } from '@nestjs/core';
+import { WinstonLoggerService } from './logger/logger.service';
 
 @Module({
   imports: [
@@ -19,7 +20,7 @@ import { APP_FILTER } from '@nestjs/core';
     {
     provide: APP_FILTER,
     useClass: GlobalExceptionFilter,
-  }
+  }, WinstonLoggerService
 ],
 })
 export class AppModule {}

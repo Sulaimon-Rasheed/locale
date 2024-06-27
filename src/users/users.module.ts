@@ -7,10 +7,11 @@ import { AuthService } from 'src/authentication/auth';
 import { userVerificationSchema } from './verifiedUsers.model';
 import { transactionSchema } from 'src/transaction/transaction.model';
 import { CurrencyService } from 'src/exchanger/exchanger';
+import { WinstonLoggerService } from 'src/logger/logger.service';
 
 @Module({
   imports:[MongooseModule.forFeature([{name:"User", schema:userSchema}, {name:"UserVerification", schema:userVerificationSchema}, {name:"Transaction", schema:transactionSchema}])],
   controllers: [UsersController],
-  providers: [UsersService, AuthService, CurrencyService],
+  providers: [UsersService, AuthService, CurrencyService,WinstonLoggerService],
 })
 export class UsersModule {}

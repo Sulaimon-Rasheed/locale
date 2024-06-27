@@ -14,6 +14,9 @@ import * as mailService from '../Utils/mailer';
 import { CurrencyService } from 'src/exchanger/exchanger';
 import { Transaction } from 'src/transaction/transaction.model';
 import axios from 'axios';
+import { WinstonLoggerService } from 'src/logger/logger.service';
+import * as dotenv from "dotenv"
+dotenv.config()
 
 @Injectable()
 export class UsersService {
@@ -25,11 +28,14 @@ export class UsersService {
     @InjectModel('Transaction')
     private readonly transactionModel: Model<Transaction>,
     private readonly currencyService :CurrencyService, 
+    private readonly loggerService:WinstonLoggerService,
   ){}
 
   // ---------------- Creating users-----------------------------------
   async createUser(createUserDto:CreateUserDto, res:Response){
    try{
+    this.loggerService.log('Creating a user...');
+
     const existingUser: object = await this.userModel.findOne({
       email: createUserDto.email,
     });
@@ -90,12 +96,15 @@ export class UsersService {
             </div>`,
     });
 
+    this.loggerService.log('User created successfully');
+
     return res.json({
       statusCode:201,
       message:"Successful signup. Check your email for login details and verification link.",
     })
 
    }catch(err){
+    this.loggerService.error('Something broke', err.stack);
     return res.status(500).json({
       statusCode: 500,
       message: err.message,
@@ -143,6 +152,7 @@ export class UsersService {
         message:"Successful Verification"
       })
     } catch (err) {
+      this.loggerService.error('Something broke', err.stack);
       return res.status(500).json({
         statusCode: 500,
         message: err.message,
@@ -156,6 +166,7 @@ export class UsersService {
 
   async login(LoginUserDto: LoginUserDto, res: Response) {
     try {
+      this.loggerService.log('User logging in---');
       const { email, api_key } = LoginUserDto;
       let user = await this.userModel.findOne({ email });
 
@@ -192,11 +203,14 @@ export class UsersService {
       );
 
       res.cookie('jwt', token);
+
+      this.loggerService.log('User logged in successfully');
       return res.json({
         statusCode:200,
         message:"Successful login",
       })
     } catch (err) {
+      this.loggerService.error('Something broke', err.stack);
       return res.status(500).json({
         statusCode: 500,
         message: err.message,
@@ -210,7 +224,7 @@ export class UsersService {
 
   async provideRegions(email:string,api_key:string, req:Request, res: Response) {
     try {
-
+      this.loggerService.log('fetching regions...');
       let user = await this.userModel.findOne({email});
 
       if (!user) {
@@ -280,8 +294,10 @@ const regionsPath = `../locale/src/DB/region.${fileExtension}`
         });
       }
     });
+    this.loggerService.log('Successful region fetching');
 //================================================
     } catch (err) {
+      this.loggerService.error('Something broke', err.stack);
       return res.status(500).json({
         statusCode: 500,
         message: err.message,
@@ -291,7 +307,7 @@ const regionsPath = `../locale/src/DB/region.${fileExtension}`
 
   async provideStates(email:string,api_key:string,req:Request, res: Response) {
     try {
-
+      this.loggerService.log('fetching states...');
       let user = await this.userModel.findOne({email});
 
       if (!user) {
@@ -361,8 +377,10 @@ const statesPath = `../locale/src/DB/state.${fileExtension}`
         });
       }
       });
+      this.loggerService.log('Successful states fetching');
 //================================================
     } catch (err) {
+      this.loggerService.error('Something broke', err.stack);
       return res.status(500).json({
         statusCode: 500,
         message: err.message,
@@ -373,7 +391,7 @@ const statesPath = `../locale/src/DB/state.${fileExtension}`
 
   async provideLocalGovernments(email:string,api_key:string, req:Request, res: Response) {
     try {
-
+      this.loggerService.log('Fetching local governments...');
       let user = await this.userModel.findOne({email});
 
       if (!user) {
@@ -444,8 +462,11 @@ if (user.subscriptionLevel === 'free') {
   });
 }
 });
+
+this.loggerService.log('Successful L.G fetching');
 //================================================
     } catch (err) {
+      this.loggerService.error('Something broke', err.stack);
       return res.status(500).json({
         statusCode: 500,
         message: err.message,
@@ -459,6 +480,7 @@ if (user.subscriptionLevel === 'free') {
 
   async getAllregions(req:Request, res:Response){
     try{
+      this.loggerService.log('Fetching regions...');
     await this.Authservice.ensureLogin(req, res)
     const user = await this.userModel.findOne({_id:res.locals.user.id})
     const fileExtension = this.getFileExtension();
@@ -488,9 +510,13 @@ if (user.subscriptionLevel === 'free') {
         });
       }
     });
-
+    this.loggerService.log('Successful region fetching');
     }catch(err){
-      throw new Error(err.message)
+      this.loggerService.error('Something broke', err.stack);
+      return res.status(500).json({
+        statusCode: 500,
+        message: err.message,
+      });
     }
   }
 
@@ -499,6 +525,7 @@ if (user.subscriptionLevel === 'free') {
 
     async getAllstates(req:Request, res:Response){
       try{
+      this.loggerService.log('fetching states...');
       await this.Authservice.ensureLogin(req, res)
       const user = await this.userModel.findOne({_id:res.locals.user.id})
       const fileExtension = this.getFileExtension();
@@ -528,9 +555,13 @@ if (user.subscriptionLevel === 'free') {
         });
       }
       });
-  
+      this.loggerService.log('Successful states fetching');
       }catch(err){
-        throw new Error(err.message)
+        this.loggerService.error('Something broke', err.stack);
+        return res.status(500).json({
+          statusCode: 500,
+          message: err.message,
+        });
       }
     }
 
@@ -538,6 +569,8 @@ if (user.subscriptionLevel === 'free') {
 
     async getAllLGA(req:Request, res:Response){
       try{
+      this.loggerService.log('Fetching local governments...');
+      
       await this.Authservice.ensureLogin(req, res)
       const user = await this.userModel.findOne({_id:res.locals.user.id})
       const fileExtension = this.getFileExtension();
@@ -567,9 +600,13 @@ if (user.subscriptionLevel === 'free') {
         });
       }
       });
-  
+      this.loggerService.log('Successful L.G fetching');
       }catch(err){
-        throw new Error(err.message)
+        this.loggerService.error('Something broke', err.stack);
+        return res.status(500).json({
+          statusCode: 500,
+          message: err.message,
+        });
       }
     }
 
@@ -615,7 +652,10 @@ async getOneRegion( region_name:string ,req:Request, res:Response){
         }
     
         }catch(err){
-          throw new Error(err.message)
+          return res.status(500).json({
+            statusCode: 500,
+            message: err.message,
+          });
         }
     }
 
@@ -660,7 +700,10 @@ async getOneRegion( region_name:string ,req:Request, res:Response){
         }
 
         }catch(err){
-          throw new Error(err.message)
+          return res.status(500).json({
+            statusCode: 500,
+            message: err.message,
+          });
         }
     }
 
@@ -705,7 +748,10 @@ async getOneRegion( region_name:string ,req:Request, res:Response){
         }
     
         }catch(err){
-          throw new Error(err.message)
+          return res.status(500).json({
+            statusCode: 500,
+            message: err.message,
+          });
         }
     }
 
@@ -759,7 +805,10 @@ async getOneRegion( region_name:string ,req:Request, res:Response){
         });
   
       } catch (err) {
-        throw new Error(err.message)
+        return res.status(500).json({
+          statusCode: 500,
+          message: err.message,
+        });
       }
     }
   
@@ -804,7 +853,10 @@ async getOneRegion( region_name:string ,req:Request, res:Response){
   
         return res.send('call back received')
       } catch (err) {
-        throw new Error(err.message)
+        return res.status(500).json({
+          statusCode: 500,
+          message: err.message,
+        });
       }
     }
   
@@ -816,7 +868,10 @@ async getOneRegion( region_name:string ,req:Request, res:Response){
           message:"Successful Payment"
         })
       }catch(err){
-        throw new Error(err.message)
+        return res.status(500).json({
+          statusCode: 500,
+          message: err.message,
+        });
       }
     }
 
