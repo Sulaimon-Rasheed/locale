@@ -10,7 +10,7 @@ import { LoginUserDto } from './dto/login-user.dto';
 import { AuthService } from 'src/authentication/auth'
 import * as fs from "fs"
 import { UserVerification } from './verifiedUsers.model';
-import * as mailService from '../utils/mailer';
+import * as mailService from '../Utils/mailer';
 import { CurrencyService } from 'src/exchanger/exchanger';
 import { Transaction } from 'src/transaction/transaction.model';
 import axios from 'axios';
