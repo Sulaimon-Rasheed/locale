@@ -26,18 +26,18 @@ export class UsersController {
    }
 
    @Get('/app/regions')
-   async provideRegions(@Query("email") email:string, @Query("api_key") api_key:string, @Res() res:Response) {
-     await this.usersService.provideRegions(email, api_key, res)
+   async provideRegions(@Query("email") email:string, @Query("api_key") api_key:string, @Req() req:Request, @Res() res:Response) {
+     await this.usersService.provideRegions(email, api_key,req, res)
    }
 
    @Get('/app/states')
-   async provideStates(@Query("email") email:string, @Query("api_key") api_key:string, @Res() res:Response) {
-     await this.usersService.provideStates(email, api_key, res)
+   async provideStates(@Query("email") email:string, @Query("api_key") api_key:string, @Req() req:Request, @Res() res:Response) {
+     await this.usersService.provideStates(email, api_key, req, res)
    }
 
    @Get('/app/local_governments')
-   async provideLocalGovernments(@Query("email") email:string, @Query("api_key") api_key:string, @Res() res:Response) {
-     await this.usersService.provideLocalGovernments(email, api_key, res)
+   async provideLocalGovernments(@Query("email") email:string, @Query("api_key") api_key:string, @Req() req:Request, @Res() res:Response) {
+     await this.usersService.provideLocalGovernments(email, api_key,req, res)
    }
 
 

@@ -191,7 +191,7 @@ export class UsersService {
         user.first_name,
       );
 
-      res.cookie('jwt', token, { maxAge: 60 * 60 * 1000 });
+      res.cookie('jwt', token);
       return res.json({
         statusCode:200,
         message:"Successful login",
@@ -204,7 +204,11 @@ export class UsersService {
     }
   }
 
-  async provideRegions(email:string,api_key:string, res: Response) {
+  private getFileExtension(): string {
+    return process.env.NODE_ENV === 'production' ? 'js' : 'ts';
+  }
+
+  async provideRegions(email:string,api_key:string, req:Request, res: Response) {
     try {
 
       let user = await this.userModel.findOne({email});
@@ -244,7 +248,13 @@ export class UsersService {
       res.cookie('jwt', token);
       
 //=================================================
-const regionsPath = `../locale/src/DB/region.ts`
+await this.Authservice.ensureLogin(req, res)
+const theUser = await this.userModel.findOne({_id:res.locals.user.id})
+if(!theUser){
+  return
+}
+const fileExtension = this.getFileExtension();
+const regionsPath = `../locale/src/DB/region.${fileExtension}`
     fs.readFile(regionsPath, "utf8", (err, data) => {
       if (err) {
        return res.json({
@@ -279,7 +289,7 @@ const regionsPath = `../locale/src/DB/region.ts`
     }
   }
 
-  async provideStates(email:string,api_key:string, res: Response) {
+  async provideStates(email:string,api_key:string,req:Request, res: Response) {
     try {
 
       let user = await this.userModel.findOne({email});
@@ -319,7 +329,13 @@ const regionsPath = `../locale/src/DB/region.ts`
       res.cookie('jwt', token);
       
 //=================================================
-const statesPath = `../locale/src/DB/state.ts`
+await this.Authservice.ensureLogin(req, res)
+const theUser = await this.userModel.findOne({_id:res.locals.user.id})
+if(!theUser){
+  return
+}
+const fileExtension = this.getFileExtension();
+const statesPath = `../locale/src/DB/state.${fileExtension}`
       fs.readFile(statesPath, "utf8", (err, data) => {
         if (err) {
         return res.json({
@@ -355,7 +371,7 @@ const statesPath = `../locale/src/DB/state.ts`
   }
 
 
-  async provideLocalGovernments(email:string,api_key:string, res: Response) {
+  async provideLocalGovernments(email:string,api_key:string, req:Request, res: Response) {
     try {
 
       let user = await this.userModel.findOne({email});
@@ -395,7 +411,14 @@ const statesPath = `../locale/src/DB/state.ts`
       res.cookie('jwt', token);
       
 //=================================================
-const local_govPath = `../locale/src/DB/local-gov.ts`
+await this.Authservice.ensureLogin(req, res)
+const theUser = await this.userModel.findOne({_id:res.locals.user.id})
+if(!theUser){
+  return
+}
+
+const fileExtension = this.getFileExtension();
+const local_govPath = `../locale/src/DB/local-gov.${fileExtension}`
 fs.readFile(local_govPath, "utf8", (err, data) => {
   if (err) {
     return res.json({
@@ -438,7 +461,8 @@ if (user.subscriptionLevel === 'free') {
     try{
     await this.Authservice.ensureLogin(req, res)
     const user = await this.userModel.findOne({_id:res.locals.user.id})
-    const regionsPath = `../locale/src/DB/region.ts`
+    const fileExtension = this.getFileExtension();
+    const regionsPath = `../locale/src/DB/region.${fileExtension}`
     fs.readFile(regionsPath, "utf8", (err, data) => {
       if (err) {
        return res.json({
@@ -477,7 +501,8 @@ if (user.subscriptionLevel === 'free') {
       try{
       await this.Authservice.ensureLogin(req, res)
       const user = await this.userModel.findOne({_id:res.locals.user.id})
-      const statesPath = `../locale/src/DB/state.ts`
+      const fileExtension = this.getFileExtension();
+      const statesPath = `../locale/src/DB/state.${fileExtension}`
       fs.readFile(statesPath, "utf8", (err, data) => {
         if (err) {
         return res.json({
@@ -515,7 +540,8 @@ if (user.subscriptionLevel === 'free') {
       try{
       await this.Authservice.ensureLogin(req, res)
       const user = await this.userModel.findOne({_id:res.locals.user.id})
-      const local_govPath = `../locale/src/DB/local-gov.ts`
+      const fileExtension = this.getFileExtension();
+      const local_govPath = `../locale/src/DB/local-gov.${fileExtension}`
       fs.readFile(local_govPath, "utf8", (err, data) => {
         if (err) {
           return res.json({
@@ -553,7 +579,8 @@ async getOneRegion( region_name:string ,req:Request, res:Response){
         await this.Authservice.ensureLogin(req, res)
         const user = await this.userModel.findOne({_id:res.locals.user.id})
        
-        const regionsPath = `../locale/src/DB/region.ts`
+        const fileExtension = this.getFileExtension();
+        const regionsPath = `../locale/src/DB/region.${fileExtension}`
         let allRegions:any = fs.readFileSync(regionsPath)
         let allRegionsObj:object[] = JSON.parse(allRegions)
 
@@ -599,7 +626,8 @@ async getOneRegion( region_name:string ,req:Request, res:Response){
        
         const user = await this.userModel.findOne({_id:res.locals.user.id})
         
-        const statesPath = `../locale/src/DB/state.ts`
+        const fileExtension = this.getFileExtension();
+        const statesPath = `../locale/src/DB/state.${fileExtension}`
         let allStates:any = fs.readFileSync(statesPath)
         let allStatesObj:object[] = JSON.parse(allStates)
 
@@ -643,7 +671,8 @@ async getOneRegion( region_name:string ,req:Request, res:Response){
         
         const user = await this.userModel.findOne({_id:res.locals.user.id})
         
-        const local_govPath = `../locale/src/DB/local-gov.ts`
+        const fileExtension = this.getFileExtension();
+        const local_govPath = `../locale/src/DB/local-gov.${fileExtension}`
         let allLocal_govs:any = fs.readFileSync(local_govPath)
         let allLocal_govsObj:object[] = JSON.parse(allLocal_govs)
 
