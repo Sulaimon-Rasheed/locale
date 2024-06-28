@@ -1,4 +1,11 @@
-[
+export interface Region {
+  name: string;
+  states:{name:string,local_gov_areas:string[]}[];
+  description: string;
+  capital: string;
+}
+
+const regions: Region[] =[
     {
       "name": "North Central",
       "states": [ 
@@ -191,5 +198,5 @@
     }
   ]
   
-  
+  export default regions; 
   

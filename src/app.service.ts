@@ -2,22 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { Response } from 'express';
 import * as dotenv from "dotenv"
 dotenv.config()
-import * as fs from "fs"
+import states, { State } from "src/DB/state"
 
 @Injectable()
 export class AppService {
-
-  private getFileExtension(): string {
-    return process.env.NODE_ENV === 'production' ? 'js' : 'ts';
-  }
-
   getHomePage(res:Response):any {
-    const fileExtension = this.getFileExtension();
-        const statesPath = `./src/DB/state.${fileExtension}`
-        let allStates:any = fs.readFileSync(statesPath)
-        let allStatesObj:object[] = JSON.parse(allStates)
-
-        const theState:any = allStatesObj.find((state:any)=> {
+        const theState:State = states.find((state:any)=> {
           return state.name === "Plateau"
         } )
 

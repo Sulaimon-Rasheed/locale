@@ -1,4 +1,13 @@
-[
+export interface Lg {
+    name: string;
+    state: string;
+    region: string;
+    postal_code: number;
+    population: number;
+    description: string;
+  }
+  
+  const lgs: Lg[] =[
     {
         "name": "Aba North",
         "state": "Abia",
@@ -1347,7 +1356,7 @@
         "name": "Akpabuyo",
         "state": "Cross River",
         "region": "South South",
-        "postal_code": "540101",
+        "postal_code": 540101,
         "population": 93241,
         "description": "Akpabuyo is a local government area in Cross River State, Nigeria."
     },
@@ -1355,7 +1364,7 @@
         "name": "Bakassi",
         "state": "Cross River",
         "region": "South South",
-        "postal_code": "540102",
+        "postal_code": 540102,
         "population": 84315,
         "description": "Bakassi is a local government area in Cross River State, Nigeria."
     },
@@ -1363,7 +1372,7 @@
         "name": "Bekwarra",
         "state": "Cross River",
         "region": "South South",
-        "postal_code": "540103",
+        "postal_code": 540103,
         "population": 113523,
         "description": "Bekwarra is a local government area in Cross River State, Nigeria."
     },
@@ -1371,7 +1380,7 @@
         "name": "Biase",
         "state": "Cross River",
         "region": "South South",
-        "postal_code": "540104",
+        "postal_code": 540104,
         "population": 187342,
         "description": "Biase is a local government area in Cross River State, Nigeria."
     },
@@ -1379,7 +1388,7 @@
         "name": "Boki",
         "state": "Cross River",
         "region": "South South",
-        "postal_code": "540105",
+        "postal_code": 540105,
         "population": 223191,
         "description": "Boki is a local government area in Cross River State, Nigeria."
     },
@@ -1387,7 +1396,7 @@
         "name": "Calabar Municipal",
         "state": "Cross River",
         "region": "South South",
-        "postal_code": "540106",
+        "postal_code": 540106,
         "population": 284796,
         "description": "Calabar Municipal is a local government area in Cross River State, Nigeria."
     },
@@ -1395,7 +1404,7 @@
         "name": "Calabar South",
         "state": "Cross River",
         "region": "South South",
-        "postal_code": "540107",
+        "postal_code": 540107,
         "population": 398672,
         "description": "Calabar South is a local government area in Cross River State, Nigeria."
     },
@@ -1403,7 +1412,7 @@
         "name": "Etung",
         "state": "Cross River",
         "region": "South South",
-        "postal_code": "540108",
+        "postal_code": 540108,
         "population": 137568,
         "description": "Etung is a local government area in Cross River State, Nigeria."
     },
@@ -1411,7 +1420,7 @@
         "name": "Ikom",
         "state": "Cross River",
         "region": "South South",
-        "postal_code": "540109",
+        "postal_code": 540109,
         "population": 221397,
         "description": "Ikom is a local government area in Cross River State, Nigeria."
     },
@@ -1419,7 +1428,7 @@
         "name": "Obanliku",
         "state": "Cross River",
         "region": "South South",
-        "postal_code": "540110",
+        "postal_code": 540110,
         "population": 117862,
         "description": "Obanliku is a local government area in Cross River State, Nigeria."
     },
@@ -1427,7 +1436,7 @@
         "name": "Obubra",
         "state": "Cross River",
         "region": "South South",
-        "postal_code": "540111",
+        "postal_code": 540111,
         "population": 282948,
         "description": "Obubra is a local government area in Cross River State, Nigeria."
     },
@@ -6168,3 +6177,5 @@
         "description": "Zurmi is a local government area in Zamfara State, Nigeria."
     }
 ]
+
+export default lgs;

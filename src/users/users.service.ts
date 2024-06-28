@@ -17,6 +17,10 @@ import axios from 'axios';
 import { WinstonLoggerService } from 'src/logger/logger.service';
 import * as dotenv from "dotenv"
 dotenv.config()
+import states, { State } from "../DB/state"
+import lgs, { Lg } from "../DB/local-gov"
+import regions, { Region } from "../DB/region"
+
 
 @Injectable()
 export class UsersService {
@@ -218,9 +222,9 @@ export class UsersService {
     }
   }
 
-  private getFileExtension(): string {
-    return process.env.NODE_ENV === 'production' ? 'js' : 'ts';
-  }
+  // private getFileExtension(): string {
+  //   return process.env.NODE_ENV === 'production' ? 'js' : 'ts';
+  // }
 
   async provideRegions(email:string,api_key:string, req:Request, res: Response) {
     try {
@@ -267,34 +271,23 @@ const theUser = await this.userModel.findOne({_id:res.locals.user.id})
 if(!theUser){
   return
 }
-const fileExtension = this.getFileExtension();
-const regionsPath = `../locale/src/DB/region.${fileExtension}`
-    fs.readFile(regionsPath, "utf8", (err, data) => {
-      if (err) {
-       return res.json({
-        statusCode:404,
-        error:err.message
-       })
-      }
-
-      const regions = JSON.parse(data)
       if (user.subscriptionLevel === 'free') {
         // Return lower quality data for free users
         const simplifiedRegions = regions.map(region => ({
           name: region.name,
           description: region.description,
         }));
+        this.loggerService.log('Successful region fetching');
         return res.json({
           all_regions: simplifiedRegions
         });
       } else {
         // Return full data for paid users
+        this.loggerService.log('Successful region fetching');
         return res.json({
           all_regions: regions
         });
       }
-    });
-    this.loggerService.log('Successful region fetching');
 //================================================
     } catch (err) {
       this.loggerService.error('Something broke', err.stack);
@@ -350,16 +343,6 @@ const theUser = await this.userModel.findOne({_id:res.locals.user.id})
 if(!theUser){
   return
 }
-const fileExtension = this.getFileExtension();
-const statesPath = `../locale/src/DB/state.${fileExtension}`
-      fs.readFile(statesPath, "utf8", (err, data) => {
-        if (err) {
-        return res.json({
-          statusCode:404,
-          error:err.message
-         })
-        }
-        const states = JSON.parse(data);
 
       if (user.subscriptionLevel === 'free') {
         // Return lower quality data for free users
@@ -367,17 +350,18 @@ const statesPath = `../locale/src/DB/state.${fileExtension}`
           name: state.name,
           description: state.description,
         }));
+        this.loggerService.log('Successful states fetching');
         return res.json({
           all_states: simplifiedStates
         });
       } else {
         // Return full data for paid users
+        this.loggerService.log('Successful states fetching');
         return res.json({
           all_states: states
         });
       }
-      });
-      this.loggerService.log('Successful states fetching');
+      
 //================================================
     } catch (err) {
       this.loggerService.error('Something broke', err.stack);
@@ -435,35 +419,24 @@ if(!theUser){
   return
 }
 
-const fileExtension = this.getFileExtension();
-const local_govPath = `../locale/src/DB/local-gov.${fileExtension}`
-fs.readFile(local_govPath, "utf8", (err, data) => {
-  if (err) {
-    return res.json({
-    statusCode:404,
-    error:err.message
-   })
-  }
-  const localGovernments = JSON.parse(data);
-
 if (user.subscriptionLevel === 'free') {
   // Return lower quality data for free users
-  const simplifiedLGAs = localGovernments.map(lga => ({
+  const simplifiedLGAs = lgs.map(lga => ({
     name: lga.name,
     description: lga.description,
   }));
+  this.loggerService.log('Successful L.G fetching');
   return res.json({
     all_LGA: simplifiedLGAs
   });
 } else {
   // Return full data for paid users
+  this.loggerService.log('Successful L.G fetching');
   return res.json({
-    all_LGA: localGovernments
+    all_LGA:lgs
   });
 }
-});
 
-this.loggerService.log('Successful L.G fetching');
 //================================================
     } catch (err) {
       this.loggerService.error('Something broke', err.stack);
@@ -483,34 +456,24 @@ this.loggerService.log('Successful L.G fetching');
       this.loggerService.log('Fetching regions...');
     await this.Authservice.ensureLogin(req, res)
     const user = await this.userModel.findOne({_id:res.locals.user.id})
-    const fileExtension = this.getFileExtension();
-    const regionsPath = `../locale/src/DB/region.${fileExtension}`
-    fs.readFile(regionsPath, "utf8", (err, data) => {
-      if (err) {
-       return res.json({
-        statusCode:404,
-        error:err.message
-       })
-      }
-
-      const regions = JSON.parse(data)
       if (user.subscriptionLevel === 'free') {
         // Return lower quality data for free users
         const simplifiedRegions = regions.map(region => ({
           name: region.name,
           description: region.description,
         }));
+        this.loggerService.log('Successful region fetching');
         return res.json({
           all_regions: simplifiedRegions
         });
       } else {
         // Return full data for paid users
+        this.loggerService.log('Successful region fetching');
         return res.json({
           all_regions: regions
         });
       }
-    });
-    this.loggerService.log('Successful region fetching');
+    
     }catch(err){
       this.loggerService.error('Something broke', err.stack);
       return res.status(500).json({
@@ -528,16 +491,6 @@ this.loggerService.log('Successful L.G fetching');
       this.loggerService.log('fetching states...');
       await this.Authservice.ensureLogin(req, res)
       const user = await this.userModel.findOne({_id:res.locals.user.id})
-      const fileExtension = this.getFileExtension();
-      const statesPath = `../locale/src/DB/state.${fileExtension}`
-      fs.readFile(statesPath, "utf8", (err, data) => {
-        if (err) {
-        return res.json({
-          statusCode:404,
-          error:err.message
-         })
-        }
-        const states = JSON.parse(data);
 
       if (user.subscriptionLevel === 'free') {
         // Return lower quality data for free users
@@ -545,17 +498,18 @@ this.loggerService.log('Successful L.G fetching');
           name: state.name,
           description: state.description,
         }));
+        this.loggerService.log('Successful states fetching');
         return res.json({
           all_states: simplifiedStates
         });
       } else {
         // Return full data for paid users
+        this.loggerService.log('Successful states fetching');
         return res.json({
           all_states: states
         });
       }
-      });
-      this.loggerService.log('Successful states fetching');
+      
       }catch(err){
         this.loggerService.error('Something broke', err.stack);
         return res.status(500).json({
@@ -573,34 +527,25 @@ this.loggerService.log('Successful L.G fetching');
       
       await this.Authservice.ensureLogin(req, res)
       const user = await this.userModel.findOne({_id:res.locals.user.id})
-      const fileExtension = this.getFileExtension();
-      const local_govPath = `../locale/src/DB/local-gov.${fileExtension}`
-      fs.readFile(local_govPath, "utf8", (err, data) => {
-        if (err) {
-          return res.json({
-          statusCode:404,
-          error:err.message
-         })
-        }
-        const localGovernments = JSON.parse(data);
 
       if (user.subscriptionLevel === 'free') {
         // Return lower quality data for free users
-        const simplifiedLGAs = localGovernments.map(lga => ({
+        const simplifiedLGAs = lgs.map(lga => ({
           name: lga.name,
           description: lga.description,
         }));
+        this.loggerService.log('Successful L.G fetching');
         return res.json({
           all_LGA: simplifiedLGAs
         });
       } else {
         // Return full data for paid users
+        this.loggerService.log('Successful L.G fetching');
         return res.json({
-          all_LGA: localGovernments
+          all_LGA:lgs
         });
       }
-      });
-      this.loggerService.log('Successful L.G fetching');
+      
       }catch(err){
         this.loggerService.error('Something broke', err.stack);
         return res.status(500).json({
@@ -615,13 +560,8 @@ async getOneRegion( region_name:string ,req:Request, res:Response){
       try{
         await this.Authservice.ensureLogin(req, res)
         const user = await this.userModel.findOne({_id:res.locals.user.id})
-       
-        const fileExtension = this.getFileExtension();
-        const regionsPath = `../locale/src/DB/region.${fileExtension}`
-        let allRegions:any = fs.readFileSync(regionsPath)
-        let allRegionsObj:object[] = JSON.parse(allRegions)
 
-        const theRegion:any = allRegionsObj.find((region:any)=> {
+        const theRegion:Region = regions.find((region:any)=> {
           return region.name === region_name
         } )
 
@@ -631,8 +571,6 @@ async getOneRegion( region_name:string ,req:Request, res:Response){
             error:"Opps!, Region not found"
           })
         }
-
-
         if (user.subscriptionLevel === 'free') {
           const simplifiedRegion = {
             name:theRegion.name,
@@ -665,13 +603,8 @@ async getOneRegion( region_name:string ,req:Request, res:Response){
         await this.Authservice.ensureLogin(req, res)
        
         const user = await this.userModel.findOne({_id:res.locals.user.id})
-        
-        const fileExtension = this.getFileExtension();
-        const statesPath = `../locale/src/DB/state.${fileExtension}`
-        let allStates:any = fs.readFileSync(statesPath)
-        let allStatesObj:object[] = JSON.parse(allStates)
 
-        const theState:any = allStatesObj.find((state:any)=> {
+        const theState:State = states.find((state:any)=> {
           return state.name === state_name
         } )
 
@@ -713,13 +646,8 @@ async getOneRegion( region_name:string ,req:Request, res:Response){
         await this.Authservice.ensureLogin(req, res)
         
         const user = await this.userModel.findOne({_id:res.locals.user.id})
-        
-        const fileExtension = this.getFileExtension();
-        const local_govPath = `../locale/src/DB/local-gov.${fileExtension}`
-        let allLocal_govs:any = fs.readFileSync(local_govPath)
-        let allLocal_govsObj:object[] = JSON.parse(allLocal_govs)
 
-        const theLocal_gov:any = allLocal_govsObj.find((local_gov:any)=> {
+        const theLocal_gov:Lg = lgs.find((local_gov:any)=> {
           return local_gov.name ===  LG_name
         } )
 
