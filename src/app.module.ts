@@ -23,7 +23,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
           uri: configService.get<string>('DB_URL'),
           useNewUrlParser: true,
           useUnifiedTopology: true,
-        } as MongooseModuleFactoryOptions;
+        };
       },
     }), 
     ThrottlerModule.forRoot([{ ttl: 60 * 1000, limit: 10 }]),
