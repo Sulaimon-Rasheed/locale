@@ -17,10 +17,12 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     UsersModule,
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
+      inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
         uri: configService.get<string>('DB_URL'),
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
       }),
-      inject: [ConfigService],
     }), 
     ThrottlerModule.forRoot([{ ttl: 60 * 1000, limit: 10 }]),
   ],
