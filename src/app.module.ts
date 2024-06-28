@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
-import { MongooseModule } from '@nestjs/mongoose';
+import { MongooseModule, MongooseModuleFactoryOptions } from '@nestjs/mongoose';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { GlobalExceptionFilter } from './globalError/global.filter';
 import { APP_FILTER } from '@nestjs/core';
@@ -18,11 +18,13 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
-        uri: configService.get<string>('DB_URL'),
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-      }),
+      useFactory: async (configService: ConfigService) => {
+        return {
+          uri: configService.get<string>('DB_URL'),
+          useNewUrlParser: true,
+          useUnifiedTopology: true,
+        } as MongooseModuleFactoryOptions;
+      },
     }), 
     ThrottlerModule.forRoot([{ ttl: 60 * 1000, limit: 10 }]),
   ],
