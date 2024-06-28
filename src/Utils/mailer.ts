@@ -1,20 +1,30 @@
 import * as nodemailer from 'nodemailer';
 import * as inlineBase64 from 'nodemailer-plugin-inline-base64';
-import * as dotenv from 'dotenv';
-dotenv.config();
+import { ConfigService } from '@nestjs/config';
 
-export async function sendEmail({ email, subject, html }) {
+interface SendEmailOptions {
+  email: string;
+  subject: string;
+  html: string;
+}
+
+export async function sendEmail(sendEmailOptions:SendEmailOptions, configService:ConfigService) {
+  const { email, subject, html } = sendEmailOptions
+  
   try {
+    const AUTH_EMAIL:string = configService.get<string>('AUTH_EMAIL');
+    const AUTH_PASS:string = configService.get<string>('AUTH_PASS');
+    
     const transporter: nodemailer.Transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: process.env.AUTH_EMAIL,
-        pass: process.env.AUTH_PASS,
+        user:AUTH_EMAIL,
+        pass:AUTH_PASS,
       },
     });
 
     const mailOptions: nodemailer.SendMailOptions = {
-      from: process.env.AUTH_EMAIL,
+      from:AUTH_EMAIL,
       to: email,
       subject: subject,
       html: html,

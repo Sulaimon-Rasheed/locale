@@ -1,12 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import * as jwt from "jsonwebtoken"
-import * as dotenv from "dotenv"
 import {Request, Response} from 'express';
-dotenv.config()
+import { ConfigService } from '@nestjs/config';
+
 
 @Injectable()
 export class AuthService {
-    private readonly jwtSecret: string = process.env.JWT_SECRET;
+    private readonly jwtSecret:string;
+    constructor(private readonly configService: ConfigService) {
+        this.jwtSecret = this.configService.get<string>('JWT_SECRET');
+      }
 
     generateJwtToken(id: object, email:string, first_name:string): string {
         try{

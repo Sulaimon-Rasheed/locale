@@ -1,7 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { Response } from 'express';
-import * as dotenv from "dotenv"
-dotenv.config()
 import states, { State } from "src/DB/state"
 
 @Injectable()

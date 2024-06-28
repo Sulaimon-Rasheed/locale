@@ -1,10 +1,15 @@
 import axios from 'axios';
-import * as dotenv from "dotenv"
 import { Response } from 'express';
-dotenv.config()
+import { ConfigService } from '@nestjs/config';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class CurrencyService {
-    private readonly apiKey = process.env.EXCHANGE_KEY;
+  private readonly apiKey: string;
+
+  constructor(private readonly configService: ConfigService) {
+    this.apiKey = this.configService.get<string>('EXCHANGE_KEY');
+  }
   
     async getExchangeRate(res:Response): Promise<any> {
       try {

@@ -1,14 +1,17 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import * as dotenv from "dotenv"
-dotenv.config()
 import * as cookieParser from "cookie-parser"
 import * as bodyParser from 'body-parser';
 import { BadRequestException, ValidationError, ValidationPipe } from '@nestjs/common';
+import {ConfigService } from '@nestjs/config';
+
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  
+  const configService = app.get(ConfigService);
+  const PORT = configService.get<string>('PORT');
   
   app.enableCors({
     origin: '*', 
@@ -31,6 +34,6 @@ async function bootstrap() {
   );
 
     
-  await app.listen(process.env.PORT);
+  await app.listen(PORT);
 }
 bootstrap();

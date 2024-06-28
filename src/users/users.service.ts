@@ -8,15 +8,13 @@ import * as encoding from "../Utils/bcrypt"
 import {Request, Response} from "express"
 import { LoginUserDto } from './dto/login-user.dto';
 import { AuthService } from 'src/authentication/auth'
-import * as fs from "fs"
 import { UserVerification } from './verifiedUsers.model';
-import * as mailService from '../Utils/mailer';
+import {sendEmail} from '../Utils/mailer';
 import { CurrencyService } from 'src/exchanger/exchanger';
 import { Transaction } from 'src/transaction/transaction.model';
 import axios from 'axios';
 import { WinstonLoggerService } from 'src/logger/logger.service';
-import * as dotenv from "dotenv"
-dotenv.config()
+import {ConfigService } from '@nestjs/config';
 import states, { State } from "../DB/state"
 import lgs, { Lg } from "../DB/local-gov"
 import regions, { Region } from "../DB/region"
@@ -24,6 +22,7 @@ import regions, { Region } from "../DB/region"
 
 @Injectable()
 export class UsersService {
+  private readonly PAYSTACK_KEY: string;
   constructor(
     @InjectModel("User") private readonly userModel:Model<User>,
     private readonly Authservice:AuthService,
@@ -33,7 +32,10 @@ export class UsersService {
     private readonly transactionModel: Model<Transaction>,
     private readonly currencyService :CurrencyService, 
     private readonly loggerService:WinstonLoggerService,
-  ){}
+    private readonly configService: ConfigService
+  ){
+    this.PAYSTACK_KEY = this.configService.get<string>('PAYSTACK_KEY')
+  }
 
   // ---------------- Creating users-----------------------------------
   async createUser(createUserDto:CreateUserDto, res:Response){
@@ -70,7 +72,7 @@ export class UsersService {
       expiring_date: Date.now() + 21600000,
     });
 
-    await mailService.sendEmail({
+    await sendEmail({
       email: createUserDto.email,
       subject: 'Verify your email',
       html: `<div style = "background-color:lightgrey; padding:16px"; border-radius:20px>
@@ -98,7 +100,7 @@ export class UsersService {
               uniqueString
             } >${currUrl + '/users/verify/' + newUser._id + '/' + uniqueString}<a/></p>
             </div>`,
-    });
+    }, this.configService);
 
     this.loggerService.log('User created successfully');
 
@@ -714,7 +716,7 @@ async getOneRegion( region_name:string ,req:Request, res:Response){
         };
   
         const headers = {
-          Authorization: `Bearer ${process.env.PAYSTACK_KEY}`,
+          Authorization: `Bearer ${this.PAYSTACK_KEY}`,
         };
   
         await axios.post(
@@ -763,7 +765,7 @@ async getOneRegion( region_name:string ,req:Request, res:Response){
           user.subscriptionLevel = "paid"
           user.save();
   
-          await mailService.sendEmail({
+          await sendEmail({
             email:user.email,
             subject: 'You are now upgraded',
             html: `<div>
@@ -771,7 +773,7 @@ async getOneRegion( region_name:string ,req:Request, res:Response){
           <p>You have been upgraded to the paid tier of <b>Locale</b>.You can now access full datas for regions states and local governments.</p>
           <p>Your compliance will be appreciated. Thanks.</p>
           </div>`,
-          });
+          }, this.configService);
         }
   
         if (body.event === 'charge.failed') {
